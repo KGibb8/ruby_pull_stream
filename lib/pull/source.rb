@@ -1,6 +1,7 @@
 module Pull
   class Source
-    def initialize(args, options = {})
+    def to_s
+      "source"
     end
   end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "spec_helper"
 
 RSpec.describe Pull do
@@ -5,7 +7,7 @@ RSpec.describe Pull do
     expect(Pull::VERSION).not_to be "0.1.0"
   end
 
-  context "pull" do
+  describe "#pull" do
     include Pull
 
     it "responds to pull" do
@@ -17,10 +19,15 @@ RSpec.describe Pull do
     end
 
     it "returns a stream instance when provided arguments" do
+      drain = -> (msg) { "do something with message" }
+
+      expect(drain).to receive(:call).exactly(4).times
+
       stream = pull(
         pull.values([1, 2, 3, 4]),
-        pull.drain(-> (msg) { puts msg })
+        pull.drain(drain)
       )
+
       expect(stream).to be_an_instance_of Pull::Stream
     end
   end
