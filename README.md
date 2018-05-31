@@ -4,6 +4,7 @@ A minimal pull based data streaming client for Ruby.
 
 ![sinking ducky](https://media.giphy.com/media/WV61B73quTNW8/giphy.gif)
 
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -23,6 +24,77 @@ Or install it yourself as:
 ## Usage
 
 In classic-streams, streams _push_ data to the next stream in the pipeline. With pull streams, data is pulled out of the source stream, into the destination. `pull_stream` is a Ruby implementation of a Javascript module [pull-stream](https://github.com/pull-stream/pull-stream) used by the [Scuttlebutt](http://scuttlebutt.nz/) community. It has been built as a means to improve my knowledge of pull-streams in Node. It may prove to be useful in Ruby though I am yet to conceive of an application.
+
+`pull_stream` opens up a `pull` method that takes any number of arguments. The first must be a _source_. The last must be a _sink_. Any number of _through_'s can be added in the middle.
+
+```ruby
+pull(
+  source,
+  map,
+  filter,
+  take,
+  sink
+)
+```
+
+Simply include the `Pull` module into any class and begin pulling streams
+
+```ruby
+class DuckStream
+  include Pull
+
+  attr_reader :ducks
+
+  def initialize(ducks)
+    @ducks = ducks
+  end
+
+  def call
+    pull(
+      pull.values(ducks),
+      # First lets make sure we've only got ducks, this filters out Gary, sorry Gary
+      pull.filter( -> (duck) { duck.type != "Duck" }),
+      # Lets objectify our ducks
+      pull.map( -> (duck) {
+        name, type = duck.split(" the ")
+        OpenStruct.new(name: duck, type: type)
+      }),
+      # Turns out Alice and Bob are actually Pochards, a specific type of duck
+      pull.map( -> (duck) {
+        duck.tap { |d| d.type.gsub(/Duck/, /Pochard/) }
+      }),
+      # Group all the remaining ducks together...
+      pull.collect(-> (ducks) {
+        # and show your ducks
+        puts ducks.map { |d| "#{d.name}: #{d.type}" }.join("\n")
+      })
+    )
+  end
+end
+
+ducks = ["Alice the Duck", "Gary the Gopher", "Bob the Duck", "Grace the Goose", "Elvis the Mallard"]
+
+DuckStream.new(ducks).call
+
+# Alice: Pochard
+# Bob: Pochard
+# Grace: Goose
+# Elvis: Mallard
+```
+
+If a _sink_ is not provided, pull returns itself as a source, and can be used in another pull stream.
+
+```ruby
+source = pull(
+  pull.values([1, 2, 3, 4, 5]),
+  pull.map(-> (value) { value ** 2 })
+)
+
+pull(
+  source,
+  # Apply more throughs and a sink
+)
+```
 
 ## Development
 
