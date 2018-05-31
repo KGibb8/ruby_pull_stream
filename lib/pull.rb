@@ -2,9 +2,11 @@
 
 require "pull/version"
 require "pull/source"
+require "pull/transition"
 require "pull/sink"
 require "pull/stream"
 require "pull/values"
+require "pull/map"
 require "pull/drain"
 require "pull/collect"
 require "pull/helper"
