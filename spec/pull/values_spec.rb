@@ -3,16 +3,42 @@
 require "spec_helper"
 
 RSpec.describe Pull::Values do
-  let(:values) { Pull::Values.new([1, 2, 3, 4, 5]) }
 
-  describe "#initialize" do
-    it "throws an error unless passed an array" do
-      expect{ Pull::Values.new("woof") }.to raise_error TypeError
+  let(:bird_calls) { ["tweet", "squawk", "bk-aaap", "meep meep"]  }
+  let(:source) { Pull::Values.new(bird_calls) }
+  let(:read) { source.() }
+
+  it "returns a lambda/proc when called" do
+    expect(read).to be_a_kind_of Proc
+  end
+
+  describe "behaviour when called" do
+    class HasACall
+      def call(value)
+        puts "I am a bird and I go #{value}"
+        value
+      end
     end
 
-    it "takes an abort callback" do
-      callback = values.instance_variable_get("@on_abort")
-      expect(callback).to be_a_kind_of(Proc)
+    let(:being_called) { HasACall.new }
+
+    it "increments through the values when called" do
+      read.(false, -> (value) {
+        expect(value).to eq "tweet"
+      })
+
+      read.(false, -> (value) {
+        expect(value).to eq "squawk"
+      })
+    end
+
+    it "returns when all values have been passed" do
+      bird_calls.count.times do
+        read.(false, being_called)
+      end
+
+      last_call = read.(false, being_called)
+      expect(last_call).to be_falsey
     end
   end
 end

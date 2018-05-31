@@ -17,7 +17,7 @@ module Pull
     end
 
     def call
-      return -> (finish, callback) {
+      -> (finish, callback) {
         if finish
           on_abort.()
           return nil
