@@ -5,12 +5,13 @@ module Pull
     }
 
     def initialize(callback)
-      raise ArgumentError unless callback.respond_to?(:call)
+      raise TypeError unless callback.respond_to?(:call)
+
       @callback = callback
     end
 
     def call(read, done = DEFAULT_DONE_CALLBACK)
-      raise ArgumentError unless read.respond_to?(:call)
+      raise TypeError, 'read: provide an object that executes a callback' unless read.respond_to?(:call)
     end
 
     def to_s

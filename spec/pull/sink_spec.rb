@@ -7,7 +7,7 @@ RSpec.describe Pull::Sink do
      describe "#initialize" do
        context "without an object that responds to #call" do
          it "raises an error" do
-           expect { Pull::Sink.new("should raise an error") }.to raise_error ArgumentError
+           expect { Pull::Sink.new("should raise an error") }.to raise_error TypeError
          end
        end
 
@@ -24,7 +24,7 @@ RSpec.describe Pull::Sink do
          let(:sink) { Pull::Sink.new("should raise an error") }
 
          it "raises an error" do
-           expect { sink.("thing") }.to raise_error ArgumentError
+           expect { sink.("thing") }.to raise_error TypeError
          end
        end
      end
