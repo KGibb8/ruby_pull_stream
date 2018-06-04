@@ -42,18 +42,20 @@ Simply include the `Pull` module into any class and begin pulling streams
 ```ruby
 include Pull
 
-
 ducks = ["Alice the Duck", "Gary the Gopher", "Bob the Duck", "Grace the Goose", "Elvis the Mallard"]
 
 pull(
   pull.values(ducks),
-  # First lets make sure we've only got ducks, this filters out Gary, sorry Gary
-  pull.filter( -> (duck) { duck.type != "Duck" }),
   # Lets objectify our ducks
   pull.map( -> (duck) {
     name, type = duck.split(" the ")
     OpenStruct.new(name: duck, type: type)
   }),
+  # Lets make sure we've only got ducks, this filters out Gary, sorry Gary
+  pull.filter( -> (duck) { duck.type != "Duck" }),
+  # Lets make sure we've only got ducks, this filters out Gary, sorry Gary
+  pull.filter( -> (duck) { duck.type != "Duck" }),
+>>>>>>> Stashed changes
   # Turns out Alice and Bob are actually Pochards, a specific type of duck
   pull.map( -> (duck) {
     duck.tap { |d| d.type.gsub(/Duck/, /Pochard/) }
