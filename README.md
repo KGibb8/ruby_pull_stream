@@ -40,41 +40,30 @@ pull(
 Simply include the `Pull` module into any class and begin pulling streams
 
 ```ruby
-class DuckStream
-  include Pull
+include Pull
 
-  attr_reader :ducks
-
-  def initialize(ducks)
-    @ducks = ducks
-  end
-
-  def call
-    pull(
-      pull.values(ducks),
-      # First lets make sure we've only got ducks, this filters out Gary, sorry Gary
-      pull.filter( -> (duck) { duck.type != "Duck" }),
-      # Lets objectify our ducks
-      pull.map( -> (duck) {
-        name, type = duck.split(" the ")
-        OpenStruct.new(name: duck, type: type)
-      }),
-      # Turns out Alice and Bob are actually Pochards, a specific type of duck
-      pull.map( -> (duck) {
-        duck.tap { |d| d.type.gsub(/Duck/, /Pochard/) }
-      }),
-      # Group all the remaining ducks together...
-      pull.collect(-> (ducks) {
-        # and show your ducks
-        puts ducks.map { |d| "#{d.name}: #{d.type}" }.join("\n")
-      })
-    )
-  end
-end
 
 ducks = ["Alice the Duck", "Gary the Gopher", "Bob the Duck", "Grace the Goose", "Elvis the Mallard"]
 
-DuckStream.new(ducks).call
+pull(
+  pull.values(ducks),
+  # First lets make sure we've only got ducks, this filters out Gary, sorry Gary
+  pull.filter( -> (duck) { duck.type != "Duck" }),
+  # Lets objectify our ducks
+  pull.map( -> (duck) {
+    name, type = duck.split(" the ")
+    OpenStruct.new(name: duck, type: type)
+  }),
+  # Turns out Alice and Bob are actually Pochards, a specific type of duck
+  pull.map( -> (duck) {
+    duck.tap { |d| d.type.gsub(/Duck/, /Pochard/) }
+  }),
+  # Group all the remaining ducks together...
+  pull.collect(-> (ducks) {
+    # and show your ducks
+    puts ducks.map { |d| "#{d.name}: #{d.type}" }.join("\n")
+  })
+)
 
 # Alice: Pochard
 # Bob: Pochard
@@ -95,6 +84,24 @@ pull(
   # Apply more throughs and a sink
 )
 ```
+
+### Pull Stream's API
+
+```
+pull.values # source
+pull.keys # source
+pull.infinity # source
+
+pull.map # through
+pull.filter # through
+pull.take # through
+
+pull.drain # sink
+pull.collect # sink
+pull.log # sink
+pull.reduce # sink
+```
+
 
 ## Development
 
