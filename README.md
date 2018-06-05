@@ -55,7 +55,6 @@ pull(
   pull.filter( -> (duck) { duck.type != "Duck" }),
   # Lets make sure we've only got ducks, this filters out Gary, sorry Gary
   pull.filter( -> (duck) { duck.type != "Duck" }),
->>>>>>> Stashed changes
   # Turns out Alice and Bob are actually Pochards, a specific type of duck
   pull.map( -> (duck) {
     duck.tap { |d| d.type.gsub(/Duck/, /Pochard/) }
