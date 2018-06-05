@@ -11,6 +11,7 @@ require "pull/through/take"
 require "pull/sink/drain"
 require "pull/sink/collect"
 require "pull/sink/log"
+require "pull/sink/reduce"
 
 require "pull/helper"
 
