@@ -42,34 +42,31 @@ Simply include the `Pull` module into any class and begin pulling streams
 ```ruby
 include Pull
 
-ducks = ["Alice the Duck", "Gary the Gopher", "Bob the Duck", "Grace the Goose", "Elvis the Mallard"]
+ducks = ["Alice the Duck", "Gary the Gopher", "Bob the Duck", "Grace the Duck", "Elvis the Duck"]
 
 pull(
   pull.values(ducks),
   # Lets objectify our ducks
-  pull.map( -> (duck) {
+  pull.map do |duck|
     name, type = duck.split(" the ")
-    OpenStruct.new(name: duck, type: type)
-  }),
+    OpenStruct.new(name: name, type: type)
+  end,
   # Lets make sure we've only got ducks, this filters out Gary, sorry Gary
-  pull.filter( -> (duck) { duck.type != "Duck" }),
-  # Lets make sure we've only got ducks, this filters out Gary, sorry Gary
-  pull.filter( -> (duck) { duck.type != "Duck" }),
-  # Turns out Alice and Bob are actually Pochards, a specific type of duck
-  pull.map( -> (duck) {
-    duck.tap { |d| d.type.gsub(/Duck/, /Pochard/) }
-  }),
-  # Group all the remaining ducks together...
-  pull.collect(-> (ducks) {
-    # and show your ducks
-    puts ducks.map { |d| "#{d.name}: #{d.type}" }.join("\n")
-  })
+  pull.filter { |duck| duck.type == "Duck" },
+  # Turns out these ducks are actually Pochards
+  pull.map do |duck|
+    duck.tap { |d| d.type = "Pochard" }
+  end,
+  # Spit out each duck one at a time...
+  pull.drain do |duck|
+    puts duck
+  end
 )
 
-# Alice: Pochard
-# Bob: Pochard
-# Grace: Goose
-# Elvis: Mallard
+#<OpenStruct name="Alice", type="Pochard">
+#<OpenStruct name="Bob", type="Pochard">
+#<OpenStruct name="Grace", type="Pochard">
+#<OpenStruct name="Elvis", type="Pochard">
 ```
 
 If a _sink_ is not provided, pull returns itself as a source, and can be used in another pull stream.
@@ -77,7 +74,7 @@ If a _sink_ is not provided, pull returns itself as a source, and can be used in
 ```ruby
 source = pull(
   pull.values([1, 2, 3, 4, 5]),
-  pull.map(-> (value) { value ** 2 })
+  pull.map { |value| value ** 2 }
 )
 
 pull(
