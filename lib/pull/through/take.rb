@@ -8,7 +8,6 @@ module Pull
     end
 
     def call(read)
-      return nil unless @index < @limit
       -> (finish, callback) {
         if finish
           on_abort.()
@@ -16,10 +15,10 @@ module Pull
         end
 
         read.(nil, -> (value) {
+          return nil if @index >= @limit
           callback.(value)
+          @index += 1
         })
-
-        @index += 1
       }
     end
   end

@@ -33,7 +33,7 @@ RSpec.describe Pull do
     it "applies multiple throughs before a sink" do
       pull(
         pull.values(values),
-        pull.filter { |value| value == 2 },
+        pull.filter { |value| value != 2 },
         pull.map { |value| value ** 2 },
         pull.take(2),
         pull.collect do |values|
