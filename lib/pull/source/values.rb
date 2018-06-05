@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
-require "pull/source"
-
 module Pull
-  class Values < Pull::Source
+  class Values
     DEFAULT_ABORT_PROC = -> () {
       puts "abort abort"
     }

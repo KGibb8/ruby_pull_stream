@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 module Pull
-  class Filter < Pull::Transition
-    def initialize(&block)
-      raise TypeError unless block.respond_to?(:call)
-
-      @block = block
+  class Take
+    def initialize(limit)
+      @limit = limit
+      @index = 0
     end
 
     def call(read)
+      return nil unless @index < @limit
       -> (finish, callback) {
         if finish
           on_abort.()
@@ -16,14 +16,11 @@ module Pull
         end
 
         read.(nil, -> (value) {
-          pass = block.call(value)
-          callback.(value) if pass
+          callback.(value)
         })
+
+        @index += 1
       }
     end
-
-    private
-
-    attr_reader :block
   end
 end

@@ -1,28 +1,36 @@
 # frozen_string_literal: true
 
 require "pull/version"
-require "pull/source"
-require "pull/transition"
-require "pull/sink"
-require "pull/stream"
-require "pull/values"
-require "pull/map"
-require "pull/drain"
-require "pull/collect"
+
+require "pull/source/values"
+
+require "pull/through/map"
+require "pull/through/filter"
+require "pull/through/take"
+
+require "pull/sink/drain"
+require "pull/sink/collect"
+require "pull/sink/log"
+
 require "pull/helper"
 
 module Pull
   def pull(*args)
     return Pull::Helper.new if args.empty?
+    recurse(nil, args)
+    true
+  end
 
-    # Actually we want to defer the pull_stream if a source is not provided
-    source = args.first
-    raise StandardError unless source.to_s == "source"
+  private
 
-    # Actually we want to defer the pull_stream if a sink is not provided
-    sink = args.last
-    raise StandardError unless sink.to_s == "sink"
+  def recurse(streamer, args)
+    return if args.empty?
+    arg = args.shift
+    raise TypeError unless arg.respond_to?(:call)
 
-    Pull::Stream.new(source, sink)
+    recurse(
+      streamer.nil? ? arg.() : arg.(streamer),
+      args
+    )
   end
 end

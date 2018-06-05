@@ -10,6 +10,8 @@ RSpec.describe Pull do
   describe "#pull" do
     include Pull
 
+    let(:values) { [1, 2, 3, 4, 5] }
+
     it "responds to pull" do
       respond_to?(:pull)
     end
@@ -18,17 +20,26 @@ RSpec.describe Pull do
       expect(pull).to be_an_instance_of Pull::Helper
     end
 
-    it "returns a stream instance when provided arguments" do
-      drain = -> (msg) { "do something with message" }
-
-      expect(drain).to receive(:call).exactly(4).times
-
-      stream = pull(
-        pull.values([1, 2, 3, 4]),
-        pull.drain(drain)
+    it "applies a sink to a through to a source" do
+      pull(
+        pull.values(values),
+        pull.map { |value| value ** 2 },
+        pull.collect do |values|
+          expect(values.sum).to eq 55
+        end
       )
+    end
 
-      expect(stream).to be_an_instance_of Pull::Stream
+    it "applies multiple throughs before a sink" do
+      pull(
+        pull.values(values),
+        pull.filter { |value| value == 2 },
+        pull.map { |value| value ** 2 },
+        pull.take(2),
+        pull.collect do |values|
+          expect(values.sum).to eq 10
+        end
+      )
     end
   end
 end

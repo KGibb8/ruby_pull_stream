@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
 module Pull
-  class Map < Pull::Transition
-    def initialize(mapper)
-      raise TypeError unless mapper.respond_to?(:call)
-
-      @mapper = mapper
+  class Map
+    def initialize(&block)
+      @block = block
     end
 
     def call(read)
@@ -16,13 +14,13 @@ module Pull
         end
 
         read.(nil, -> (value) {
-          callback.(mapper.(value))
+          callback.(block.call(value))
         })
       }
     end
 
     private
 
-    attr_reader :mapper
+    attr_reader :block
   end
 end

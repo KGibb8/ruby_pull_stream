@@ -6,12 +6,24 @@ module Pull
       Pull::Values.new(args)
     end
 
-    def drain(callback)
-      Pull::Drain.new(callback)
+    def drain(&block)
+      Pull::Drain.new(&block)
     end
 
-    def collect(callback)
-      Pull::Collect.new(callback)
+    def collect(&block)
+      Pull::Collect.new(&block)
+    end
+
+    def map(&block)
+      Pull::Map.new(&block)
+    end
+
+    def filter(&block)
+      Pull::Filter.new(&block)
+    end
+
+    def take(limit)
+      Pull::Take.new(limit)
     end
 
     def log
