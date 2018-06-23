@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
 module Pull
-  class Infinity < Pull::Source
+  class Infinity
+    DEFAULT_ABORT_PROC = -> () {
+      puts "abort abort"
+    }
+
     def initialize(on_abort = DEFAULT_ABORT_PROC)
       @index = 0
     end

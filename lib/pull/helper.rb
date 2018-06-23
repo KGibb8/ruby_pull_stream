@@ -6,6 +6,10 @@ module Pull
       Pull::Values.new(args)
     end
 
+    def infinity
+      Pull::Infinity.new
+    end
+
     def drain(&block)
       Pull::Drain.new(&block)
     end

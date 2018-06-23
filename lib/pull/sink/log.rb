@@ -8,9 +8,9 @@ module Pull
 
     def call(read, done = DEFAULT_DONE_CALLBACK)
       raise TypeError unless read.respond_to?(:call)
-      Pull::Drain.new(-> (value) {
+      Pull::Drain.new do |value|
         puts value
-      }).(read)
+      end.(read)
     end
   end
 end

@@ -3,6 +3,7 @@
 require "pull/version"
 
 require "pull/source/values"
+require "pull/source/infinity"
 
 require "pull/through/map"
 require "pull/through/filter"
