@@ -15,7 +15,7 @@ RSpec.describe Pull::Take do
       expect(through.(source.())).to be_a_kind_of Proc
     end
 
-    it "performs the map when required by a sink" do
+    it "breaks after take value" do
       sink = Pull::Collect.new do |values|
         expect(values).to eq [1, 2]
         expect(values.sum).to eq 3

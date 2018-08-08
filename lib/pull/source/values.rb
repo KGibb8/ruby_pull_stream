@@ -7,7 +7,7 @@ module Pull
     }
 
     def initialize(array, on_abort = DEFAULT_ABORT_PROC)
-      raise TypeError unless array.kind_of?(Array)
+      array = objectify(array) unless array.kind_of?(Array)
 
       @array = array
       @index = 0
@@ -32,5 +32,15 @@ module Pull
     private
 
     attr_reader :array, :on_abort
+
+    def objectify(object)
+      if object.kind_of?(Hash)
+        object.map { |k, v| v }
+      else
+        object.pretty_print_instance_variables.inject([]) do |coll, iv|
+          coll << object.instance_variable_get(iv)
+        end
+      end
+    end
   end
 end
